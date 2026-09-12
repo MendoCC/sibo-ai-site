@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integritetspolicy — SIBO AI</title>
+<meta name="description" content="Integritetspolicy för SIBO AI: vad som stannar på din enhet och vad som lämnar den.">
+<meta name="robots" content="index,follow">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="/">SIBO AI</a>
+  <nav>
+    <a href="/">Hem</a>
+    <a href="/privacy.html">Integritet</a>
+    <a href="/support.html">Support</a>
+  </nav>
+</div></header>
+<main class="wrap">
+<h1>Privacy policy / Integritetspolicy</h1>
+<p class="lede">SIBO AI · Menudo Consulting AB · Senast uppdaterad 12 september 2026</p>
+<p><a href="#en">English</a> · <a href="#sv">Svenska</a></p>
+<hr>
+<h1 id="en">Privacy policy (English)</h1>
+<h2>1. Who is responsible for your data (data controller)</h2>
+<p><strong>1.1 Controller.</strong> The controller responsible for the personal data described in this policy is:</p>
+<ul>
+<li><strong>Menudo Consulting AB</strong> (Sweden) — registered office: <strong><span class="todo">ATT FYLLA I</span></strong></li>
+<li>Company registration number / organisationsnummer: <strong><span class="todo">ATT FYLLA I</span></strong></li>
+<li>Contact e-mail for privacy matters: <strong><span class="todo">ATT FYLLA I</span></strong></li>
+<li>Postal address for privacy matters: <strong><span class="todo">ATT FYLLA I</span></strong></li>
+</ul>
+<p><strong>1.2 The app and the service.</strong> "SIBO AI" (the "app") is a wellness and self-management tracking tool. It is <strong>not a medical device</strong> and does not diagnose, treat, or cure any condition. The app has two components that matter for privacy:</p>
+<ol>
+<li>the <strong>on-device app</strong> (iOS and Android), which stores and analyses your logs locally; and</li>
+<li>a <strong>small backend</strong> (a "Cloudflare Worker" proxy) that is used only when you use the <strong>AI Coach</strong> feature, and to verify app-store purchases.</li>
+</ol>
+<p><strong>1.3 Scope.</strong> This policy covers the app, the backend proxy, and the store listing for SIBO AI.</p>
+<p><strong>1.4 Review notice.</strong> Sections 4 (legal basis), 5 (third-country transfer), 6 (retention), and 8 (deletion) contain items marked <strong><span class="todo">ATT BEKRÄFTA</span></strong>. Those must be confirmed with the sub-processors and reviewed by counsel before this policy is published. Do not publish a version that still contains a <strong><span class="todo">ATT BEKRÄFTA</span></strong> in a place that makes a compliance statement.</p>
+<h2>2. What stays on your device</h2>
+<p><strong>2.1 Local database.</strong> All of your logging data is stored in a <strong>local SQLite database on your device</strong> (file name <code>sibocoach.db</code>). This includes:</p>
+<ul>
+<li><strong>Meals</strong>: timestamps, foods and ingredients, quantities, meal size.</li>
+<li><strong>Symptoms</strong>: type, severity (1–10), timestamps, and related notes.</li>
+<li><strong>Supplements</strong>: name, category, dosage, timing, frequency, start/stop dates, and your effectiveness ratings.</li>
+<li><strong>Chat history</strong> with the AI Coach (as it is shown to you in the app).</li>
+<li><strong>Tests / experiments</strong> you record, if you use those features.</li>
+<li><strong>Settings</strong>, including your <strong>consent record</strong> (<code>consent_given</code>, <code>consent_version</code>, <code>consent_date</code>) and the anonymous installation identifier described in §3.4.</li>
+</ul>
+<p><strong>2.2 No account, no server copy of your logs.</strong> The app requires <strong>no account and no login</strong>. We do <strong>not</strong> keep a server-side copy of your logs. There is no cloud sync of your health data. If you lose the device, the logs are lost with it unless you made your own backup (e.g. a device backup).</p>
+<p><strong>2.3 On-device analysis.</strong> The correlation engine (risk ratios, confidence intervals, Fisher/FDR-style significance) runs <strong>entirely on your device</strong>. No log data is sent anywhere to produce it.</p>
+<p><strong>2.4 What "stays on the device" therefore means.</strong> Meal/symptom/supplement records, the correlation analysis, and your chat history are stored and processed locally. The <strong>only</strong> exception is the AI Coach context described in §3.</p>
+<h2>3. What leaves your device — and to whom</h2>
+<p><strong>3.1 The only routine outflow is the AI Coach.</strong> Health data leaves your device <strong>only when you actively send a question to the AI Coach</strong>. No background process sends your logs. If you never use the AI Coach (or never press send), no health data leaves the device.</p>
+<p><strong>3.2 Exactly what is sent in an AI Coach request.</strong> When you send a question, the app builds a "health context" string and sends it together with your message. The context is produced by the app's <code>buildAiContext()</code> function and contains:</p>
+<ul>
+<li><strong>Symptoms — last 7 days</strong>: each symptom type, the number of occurrences, and the average severity out of 10.</li>
+<li><strong>Current supplements — with dosages</strong>: supplement name, <strong>dosage</strong> (for example "Berberine 500 mg"), and how many days you have been taking it.</li>
+<li><strong>Meals — last 7 days</strong>: the total number of meals, plus the <strong>last 5 meals with their food items and quantities</strong>.</li>
+<li><strong>Key patterns</strong>: share of meals followed by symptoms within 3 hours, week-over-week trend (improving/worsening/stable with a percentage), potential food triggers, and any HCL-effect figure the engine has computed.</li>
+<li><strong>The chat itself</strong>: the content of the <strong>last 10 chat messages</strong> (your messages and the AI replies).</li>
+</ul>
+<p>The context is truncated server-side at a maximum of <strong>12,000 bytes</strong> (<code>MAX_HEALTH_CONTEXT_BYTES</code>). Your request also includes a <code>locale</code> value (e.g. <code>sv</code>) and a time-zone offset header (<code>X-Tz-Offset</code>) used only to reset your daily quota at your local midnight.</p>
+<p>&gt; <strong>Note for the transparency review:</strong> the dosing detail is intentional but must be disclosed plainly. Sending "Berberine 500 mg" is a health-related detail about you, and it leaves the device as part of the AI context. Any copy that says health data never leaves the device is false for this reason alone.</p>
+<p><strong>3.3 Who receives it — the chain.</strong></p>
+<ol>
+<li>The app sends the request over HTTPS to our backend proxy: <strong><code>https://sibo-coach-proxy.ekonomi-b45.workers.dev</code></strong> (<code>POST /v1/chat</code>), hosted on <strong>Cloudflare</strong> (Cloudflare, Inc., USA, with Cloudflare's EU/global network).</li>
+<li>The proxy holds the <strong>Anthropic API key server-side</strong> (the app itself has <strong>no</strong> AI key). It forwards the messages and health context to <strong>Anthropic's API</strong> (Anthropic PBC, USA), using the model <strong><code>claude-haiku-4-5</code></strong>.</li>
+<li>Anthropic returns the reply, which the proxy passes back to your app. The reply is <strong>scanned</strong> server-side for dosing strings and efficacy claims; the scan flags are logged (see §3.6).</li>
+</ol>
+<p>So the recipients of the AI context are: <strong>Cloudflare</strong> (as our hosting/processing provider) and <strong>Anthropic</strong> (as the AI model provider). No other third party receives health data.</p>
+<p><strong>3.4 The anonymous installation identifier.</strong> The app generates a <strong>random per-installation identifier (a UUID)</strong>. On iOS it is stored in <code>UserDefaults</code>; on Android in <code>SharedPreferences</code>. This identifier is sent to the proxy as the <code>uid</code> for quota counting. It is:</p>
+<ul>
+<li><strong>not</strong> your name, e-mail address, phone number, Apple ID, or Google account;</li>
+<li><strong>not</strong> linked to any account (there is no account);</li>
+<li><strong>pseudonymous</strong> rather than strictly anonymous: the proxy can see that "this installation" made N requests, but it cannot tell who you are.</li>
+</ul>
+<p>A signed <strong>device token</strong> (HMAC) is derived from the <code>uid</code> and used to authenticate requests; tampering yields <code>401</code>.</p>
+<p><strong>3.5 Quota counting.</strong> To enforce fair-use limits, the proxy counts requests <strong>per <code>uid</code> per local day and per month</strong>, and it counts total tokens against a single organisation-wide daily ceiling. These counters are stored in <strong>Cloudflare Durable Objects</strong>. The counters contain the identifier and a number — not your health content.</p>
+<p><strong>3.6 Purchase verification.</strong> If you subscribe, the app passes a store receipt reference (<code>ios:&lt;originalTransactionId&gt;</code> or <code>android:&lt;purchaseToken&gt;</code>) to the proxy, which verifies it against the <strong>Apple App Store Server API</strong> or the <strong>Google Play Developer API</strong>. We keep a cached verification verdict <strong>per <code>uid</code> for up to 24 hours</strong>, keyed on a SHA-256 hash of the receipt. <strong>No card number, payment details, or billing address ever reach the app or our server</strong> — those stay with Apple or Google.</p>
+<p><strong>3.7 Server-side logs.</strong> The proxy logs operational metadata — including the <code>uid</code>, the entitlement tier, the outcome, and any response-filter flags (<code>event: "response_flag"</code>) used to measure dosing/efficacy leaks. These logs are used for abuse prevention, cost control, and safety measurement. Log retention must be confirmed (see §6). <strong><span class="todo">ATT BEKRÄFTA: Cloudflare Workers log retention period.</span></strong></p>
+<p><strong>3.8 The optional usage statistics — planned, NOT built.</strong> A future <strong>opt-in</strong> usage-statistics feature is documented but <strong>has not been built and is off by default</strong>. If it is ever shipped, it would collect <strong>counters only</strong> (app openings, number of logs, quota levels) linked to the same anonymous installation identifier, and it would be described as *"only if you choose to turn it on."* It must <strong>not</strong> be described anywhere as something already collected. This policy will be updated before any such feature ships.</p>
+<p><strong>3.9 What we never do.</strong> We do <strong>not</strong> show ads, <strong>do not</strong> sell your data, <strong>do not</strong> share it with data brokers, and run <strong>no third-party analytics or tracking SDKs</strong>. Health data leaves the device <strong>only</strong> as the AI context in §3.2, and <strong>only</strong> when you send an AI question.</p>
+<h2>4. Legal basis for each processing operation</h2>
+<p>Under the GDPR we must have a lawful basis for each purpose. Because health data is a <strong>special category</strong> of data (Art. 9), we need <strong>both</strong> an Art. 6 basis <strong>and</strong> an Art. 9 exception. For the AI Coach we rely on your <strong>explicit consent (Art. 9(2)(a))</strong>, collected in the app before use.</p>
+<table>
+<tr><th>#</th><th>Processing operation</th><th>Data</th><th>Lawful basis (Art. 6)</th><th>Special-category basis (Art. 9)</th></tr>
+<tr><td>4.1</td><td>Storing and analysing your logs <strong>on the device</strong></td><td>Meals, symptoms, supplements, settings</td><td>Not a "processing by the controller" in the usual sense (data remains under your sole control on your own device); where it is treated as processing, <strong>Art. 6(1)(a) consent</strong></td><td><strong>Art. 9(2)(a) — explicit consent</strong></td></tr>
+<tr><td>4.2</td><td>Sending the health context to the AI Coach and receiving the reply</td><td>7-day symptoms, supplements <strong>with dosage</strong>, meals, key patterns, last 10 messages</td><td><strong>Art. 6(1)(a) consent</strong> (and/or <strong>6(1)(b)</strong> to perform the requested feature)</td><td><strong>Art. 9(2)(a) — explicit consent</strong> (this is the basis specifically required for health data leaving the device)</td></tr>
+<tr><td>4.3</td><td>Quota counting and abuse prevention</td><td>Anonymous install <code>uid</code>, counters, request metadata</td><td><strong>Art. 6(1)(f) legitimate interest</strong> (service integrity, cost control) or <strong>6(1)(b)</strong></td><td>Not applicable (no health content in the counter)</td></tr>
+<tr><td>4.4</td><td>Purchase / entitlement verification</td><td>Receipt reference, verification verdict</td><td><strong>Art. 6(1)(b) contract</strong> (delivering the subscription you bought)</td><td>Not applicable</td></tr>
+<tr><td>4.5</td><td>Security logging and safety filter measurement</td><td><code>uid</code>, tier, response flags</td><td><strong>Art. 6(1)(f) legitimate interest</strong></td><td>Not applicable to the log fields themselves</td></tr>
+<tr><td>4.6</td><td>Optional usage statistics (planned, opt-in)</td><td>Counters only</td><td><strong>Art. 6(1)(a) consent</strong></td><td>Not applicable</td></tr>
+</table>
+<p><strong>4.7 Consent is the hinge.</strong> You give explicit consent via the in-app consent screen <strong>before</strong> any logging (<code>consent_given</code> / <code>consent_version</code>). You can <strong>withdraw consent at any time</strong> in Settings; withdrawal stops future AI processing. <strong><span class="todo">ATT BEKRÄFTA / JURIST: whether Art. 6(1)(b) should be relied on at all for §4.2, or whether consent alone is the correct and sufficient basis; and confirm the wording of the consent screen matches the Art. 9(2)(a) standard for explicit consent.</span></strong></p>
+<h2>5. Transfer to a third country (USA)</h2>
+<p><strong>5.1 Where the data goes.</strong> When you use the AI Coach, your health context is processed <strong>in the United States</strong> — by <strong>Cloudflare</strong> and by <strong>Anthropic</strong>. Both are US-headquartered companies. Some processing may occur on Cloudflare's global edge network.</p>
+<p><strong>5.2 Transfer mechanism.</strong> Transfers from the EU/EEA to the US are intended to be covered by the <strong>EU Standard Contractual Clauses</strong> (Commission Implementing Decision (EU) 2021/914), together with a <strong>Data Processing Agreement</strong> with each provider. <strong><span class="todo">ATT BEKRÄFTA: confirm that a signed DPA incorporating the 2021 SCCs is in place with Cloudflare and with Anthropic, and record the module used.</span></strong> Cloudflare and Anthropic may also rely on additional safeguards (e.g. a Data Privacy Framework certification); this must be verified rather than assumed. <strong><span class="todo">ATT BEKRÄFTA</span></strong></p>
+<p><strong>5.3 Practical consequence.</strong> Because the transfer happens only when you send an AI question, <strong>not using the AI Coach means no transfer to the US</strong>. This is the single most effective way to keep your health data inside the EU/EEA.</p>
+<p><strong>5.4 JURIST.</strong> The transfer-impact assessment (TIA) for Cloudflare and Anthropic, and the choice between SCCs and any adequacy decision, must be confirmed by counsel.</p>
+<h2>6. Retention</h2>
+<table>
+<tr><th>Data</th><th>Where</th><th>Retention</th></tr>
+<tr><td>Meals, symptoms, supplements, chat history, settings</td><td>Your device (SQLite)</td><td>Until <strong>you</strong> delete it, clear app data, or uninstall the app. We have no copy.</td></tr>
+<tr><td>AI health context in transit / at the model provider</td><td>Cloudflare + Anthropic</td><td>Processed to generate the reply. <strong>Anthropic API retention and zero-retention configuration must be confirmed: <span class="todo">ATT BEKRÄFTA</span>.</strong></td></tr>
+<tr><td>Quota counters (per <code>uid</code>, day + month)</td><td>Cloudflare Durable Objects</td><td><strong>Target: rolling window, counters expire after the period they measure (day / month) plus a short buffer — exact TTL to be confirmed <span class="todo">ATT BEKRÄFTA</span>.</strong></td></tr>
+<tr><td>Cached receipt-verification verdict</td><td>Cloudflare</td><td><strong>Up to 24 hours</strong> (<code>ENTITLEMENT_CACHE_HOURS</code>).</td></tr>
+<tr><td>Signed device token</td><td>Cloudflare + your device</td><td>Valid until invalidated / app data cleared.</td></tr>
+<tr><td>Operational logs incl. <code>response_flag</code></td><td>Cloudflare</td><td><strong><span class="todo">ATT BEKRÄFTA — confirm and document a defined retention limit, e.g. 30 days.</span></strong></td></tr>
+<tr><td>Optional usage statistics</td><td>(planned, not built)</td><td><strong>[N/A until built]</strong></td></tr>
+</table>
+<p><strong>6.1 JURIST.</strong> A storage-limitation statement that says "<strong><span class="todo">ATT BEKRÄFTA</span></strong>" cannot be published. Replace every such field with a concrete, defensible period before go-live.</p>
+<h2>7. Your rights under the GDPR</h2>
+<p>You have the following rights, which you can exercise without charge:</p>
+<ul>
+<li><strong>Access (Art. 15)</strong> — see the personal data we hold about you. Because your logs are on your device, you can view them in the app. For the pseudonymous server-side data (quota counters keyed to your <code>uid</code>), contact us at <strong><span class="todo">ATT FYLLA I</span></strong>.</li>
+<li><strong>Rectification (Art. 16)</strong> — correct inaccurate data; edit it in the app.</li>
+<li><strong>Erasure / "right to be forgotten" (Art. 17)</strong> — delete your data; see §8.</li>
+<li><strong>Restriction (Art. 18)</strong> — restrict processing while a dispute is resolved.</li>
+<li><strong>Data portability (Art. 20)</strong> — export your data in a common format; the app offers JSON/CSV export.</li>
+<li><strong>Object (Art. 21)</strong> — object to processing based on legitimate interest (§4.3, §4.5).</li>
+<li><strong>Withdraw consent (Art. 7(3))</strong> — at any time, in Settings, without affecting the lawfulness of processing done before withdrawal.</li>
+<li><strong>Lodge a complaint</strong> — with the Swedish Authority for Privacy Protection (<strong>IMY</strong>, Integritetsskyddsmyndigheten, imy.se) or your local supervisory authority.</li>
+</ul>
+<p><strong>7.1 Identifying you for server-side requests.</strong> Because there is no account, we may need your <strong>anonymous installation identifier</strong> to locate the server-side quota counters for an access or erasure request. See §8.</p>
+<h2>8. How to delete everything</h2>
+<p><strong>8.1 Delete the data on your device.</strong> Uninstalling the app removes the local SQLite database and all logs. Alternatively, use <strong>"Delete All My Data"</strong> in the app's privacy settings, which permanently deletes your meals, symptoms, supplements, chat history, and settings. <strong>This cannot be undone.</strong> Once deleted, and once you stop using the AI Coach, no copy remains with us.</p>
+<p><strong>8.2 Delete the server-side quota counters.</strong> The proxy holds a small pseudonymous record (the counters in §3.5/§3.7 keyed to your <code>uid</code>). To have it deleted, e-mail <strong><span class="todo">ATT FYLLA I</span></strong> with your <strong>installation identifier</strong> and the subject "Data deletion request". We will delete the counters and associated logs within <strong>the statutory one month</strong> (Art. 12(3)). <strong><span class="todo">ATT BEKRÄFTA: confirm the internal process and the tooling to locate and delete a <code>uid</code> in the Durable Objects.</span></strong></p>
+<p><strong>8.3 Withdrawn consent ≠ deleted data.</strong> Withdrawing consent stops future AI processing but does not itself delete data. To delete, follow §8.1 and §8.2.</p>
+<h2>9. Children</h2>
+<p>SIBO AI is <strong>not directed at children</strong>. It is intended for <strong>adults aged 16 and over</strong>. We do not knowingly collect data from anyone <strong>under 16</strong>. If you believe a child under 16 has used the app, contact us at <strong><span class="todo">ATT FYLLA I</span></strong> and we will delete the associated server-side data. <strong><span class="todo">ATT BEKRÄFTA / JURIST: confirm the age threshold against the app-store age rating and each market's rules.</span></strong></p>
+<h2>10. Changes to this policy (version history)</h2>
+<p>We will update this policy when the data flow changes — for example, if the planned opt-in usage statistics (§3.8) ship, if a new sub-processor is added, or if the retention schedule changes.</p>
+<table>
+<tr><th>Version</th><th>Date</th><th>Summary of changes</th></tr>
+<tr><td>1.0</td><td>2026-09-12</td><td>First version. States the real AI-Coach data flow (7-day symptom/supplement-with-dosage/meal context + last 10 messages to Cloudflare → Anthropic), corrects the false "health data stays on your device" claim, adds Art. 9(2)(a) basis, US-transfer mechanism, retention table, rights, deletion, children, and the copy-change annex.</td></tr>
+</table>
+<hr>
+<hr>
+<h1 id="sv">Integritetspolicy (svenska)</h1>
+<h2>1. Vem ansvarar för dina uppgifter (personuppgiftsansvarig)</h2>
+<p><strong>1.1 Personuppgiftsansvarig.</strong> Ansvarig för de personuppgifter som beskrivs i denna policy är:</p>
+<ul>
+<li><strong>Menudo Consulting AB</strong> (Sverige) — säte: <strong><span class="todo">ATT FYLLA I</span></strong></li>
+<li>Organisationsnummer: <strong><span class="todo">ATT FYLLA I</span></strong></li>
+<li>Kontakt-e-post i integritetsärenden: <strong><span class="todo">ATT FYLLA I</span></strong></li>
+<li>Postadress i integritetsärenden: <strong><span class="todo">ATT FYLLA I</span></strong></li>
+</ul>
+<p><strong>1.2 Appen och tjänsten.</strong> "SIBO AI" ("appen") är ett verktyg för egenvård och livsstilsuppföljning. Den är <strong>inte en medicinteknisk produkt</strong> och diagnostiserar, behandlar eller botar inte något tillstånd. Två delar är relevanta för integriteten:</p>
+<ol>
+<li><strong>appen på enheten</strong> (iOS och Android), som lagrar och analyserar dina loggar lokalt, och</li>
+<li>en <strong>liten serverdel</strong> (en "Cloudflare Worker"-proxy) som bara används när du använder <strong>AI-coachen</strong>, samt för att verifiera köp i butikerna.</li>
+</ol>
+<p><strong>1.3 Omfattning.</strong> Policyn omfattar appen, serverdelen och butikslistningen för SIBO AI.</p>
+<p><strong>1.4 Granskningsnotis.</strong> Avsnitt 4 (rättslig grund), 5 (överföring till tredjeland), 6 (lagringstid) och 8 (radering) innehåller punkter märkta <strong><span class="todo">ATT BEKRÄFTA</span></strong>. Dessa måste bekräftas med underbiträdena och granskas av jurist innan policyn publiceras. Publicera inte en version som fortfarande innehåller ett <strong><span class="todo">ATT BEKRÄFTA</span></strong> på en plats där ett efterlevnadsstämål påstås.</p>
+<h2>2. Vilka uppgifter som stannar på enheten</h2>
+<p><strong>2.1 Lokal databas.</strong> All din loggdata lagras i en <strong>lokal SQLite-databas på enheten</strong> (filnamn <code>sibocoach.db</code>). Det gäller:</p>
+<ul>
+<li><strong>Måltider</strong>: tidsstämplar, livsmedel och ingredienser, mängder, måltidsstorlek.</li>
+<li><strong>Symtom</strong>: typ, svårighetsgrad (1–10), tidsstämplar och anteckningar.</li>
+<li><strong>Tillskott</strong>: namn, kategori, <strong>dosering</strong>, tidsstyrning, frekvens, start-/stoppdatum och dina effektbedömningar.</li>
+<li><strong>Chatthistorik</strong> med AI-coachen (så som den visas för dig i appen).</li>
+<li><strong>Tester/experiment</strong> du registrerar, om du använder de funktionerna.</li>
+<li><strong>Inställningar</strong>, inklusive din <strong>samtyckespost</strong> (<code>consent_given</code>, <code>consent_version</code>, <code>consent_date</code>) och det anonyma installations-ID som beskrivs i §3.4.</li>
+</ul>
+<p><strong>2.2 Inget konto, ingen serverkopia av dina loggar.</strong> Appen kräver <strong>inget konto och ingen inloggning</strong>. Vi har <strong>ingen</strong> serverkopia av dina loggar. Det finns ingen molnsynkronisering av dina hälsodata. Tappar du enheten försvinner loggarna med den, om du inte själv har gjort en säkerhetskopia (t.ex. enhetens egen backup).</p>
+<p><strong>2.3 Analys på enheten.</strong> Korrelationsmotorn (riskvärden, konfidensintervall, Fisher/FDR-signifikans) körs <strong>helt på enheten</strong>. Ingen loggdata skickas någonstans för att ta fram den.</p>
+<p><strong>2.4 Vad "stannar på enheten" alltså betyder.</strong> Poster för måltider, symtom och tillskott, korrelationsanalysen och chatthistoriken lagras och behandlas lokalt. Det <strong>enda</strong> undantaget är det AI-sammanhang som beskrivs i §3.</p>
+<h2>3. Vilka uppgifter som lämnar enheten — och till vem</h2>
+<p><strong>3.1 Det enda rutinmässiga utflödet är AI-coachen.</strong> Hälsodata lämnar enheten <strong>endast när du aktivt skickar en fråga till AI-coachen</strong>. Ingen bakgrundsprocess skickar dina loggar. Använder du aldrig AI-coachen (eller trycker aldrig skicka) lämnar inga hälsodata enheten.</p>
+<p><strong>3.2 Exakt vad som skickas i en AI-förfrågan.</strong> När du skickar en fråga bygger appen en "hälso-kontext" och skickar den tillsammans med ditt meddelande. Kontexten skapas av appens funktion <code>buildAiContext()</code> och innehåller:</p>
+<ul>
+<li><strong>Symtom — senaste 7 dagarna</strong>: varje symtomtyp, antal förekomster och medelsvårighetsgrad av 10.</li>
+<li><strong>Aktuella tillskott — med dosering</strong>: tillskottets namn, <strong>dosering</strong> (t.ex. "Berberine 500 mg") och hur många dagar du tagit det.</li>
+<li><strong>Måltider — senaste 7 dagarna</strong>: totalt antal måltider samt de <strong>senaste 5 måltiderna med livsmedel och mängder</strong>.</li>
+<li><strong>Nyckelmönster</strong>: andel måltider följda av symtom inom 3 timmar, veckotrend (bättre/sämre/stabil med procent), möjliga mattrigger och eventuell HCL-effekt som motorn räknat fram.</li>
+<li><strong>Chatten i sig</strong>: innehållet i de <strong>senaste 10 chattmeddelandena</strong> (dina meddelanden och AI:ns svar).</li>
+</ul>
+<p>Kontexten kapas på serversidan vid högst <strong>12 000 byte</strong> (<code>MAX_HEALTH_CONTEXT_BYTES</code>). Din förfrågan innehåller också ett <code>locale</code>-värde (t.ex. <code>sv</code>) och en tidszonshuvud (<code>X-Tz-Offset</code>) som bara används för att nollställa dygnskvoten vid din lokala midnatt.</p>
+<p>&gt; <strong>Notis för transparensgranskningen:</strong> doseringsdetaljen är avsiktlig men måste redovisas öppet. Att skicka "Berberine 500 mg" är en hälsouppgift om dig, och den lämnar enheten som en del av AI-sammanhanget. All text som säger att hälsodata aldrig lämnar enheten är osann redan av detta skäl.</p>
+<p><strong>3.3 Vilka som tar emot — kedjan.</strong></p>
+<ol>
+<li>Appen skickar förfrågan över HTTPS till vår serverproxy: <strong><code>https://sibo-coach-proxy.ekonomi-b45.workers.dev</code></strong> (<code>POST /v1/chat</code>), driftad på <strong>Cloudflare</strong> (Cloudflare, Inc., USA, med Cloudflares EU/globala nät).</li>
+<li>Proxyn håller <strong>Anthropics API-nyckel på serversidan</strong> (appen har <strong>ingen</strong> egen AI-nyckel). Den vidarebefordrar meddelanden och hälso-kontext till <strong>Anthropics API</strong> (Anthropic PBC, USA) med modellen <strong><code>claude-haiku-4-5</code></strong>.</li>
+<li>Anthropic returnerar svaret som proxyn skickar tillbaka till din app. Svaret <strong>skannas</strong> på serversidan efter doseringssträngar och verkan-påståenden; skanningsflaggorna loggas (se §3.6).</li>
+</ol>
+<p>Mottagarna av AI-sammanhanget är alltså: <strong>Cloudflare</strong> (som leverantör av drift/hosting) och <strong>Anthropic</strong> (som leverantör av AI-modellen). Ingen annan tredje part tar emot hälsodata.</p>
+<p><strong>3.4 Det anonyma installations-ID:t.</strong> Appen genererar ett <strong>slumpat per-installations-ID (en UUID)</strong>. På iOS lagras det i <code>UserDefaults</code>, på Android i <code>SharedPreferences</code>. ID:t skickas till proxyn som <code>uid</code> för kvoträkning. Det är:</p>
+<ul>
+<li><strong>inte</strong> ditt namn, din e-post, ditt telefonnummer, ditt Apple-ID eller ditt Google-konto;</li>
+<li><strong>inte</strong> kopplat till något konto (det finns inget konto);</li>
+<li><strong>pseudonymt</strong> snarare än strikt anonymt: proxyn kan se att "denna installation" gjort N förfrågningar, men kan inte veta vem du är.</li>
+</ul>
+<p>En signerad <strong>enhetstoken</strong> (HMAC) härleds ur <code>uid</code> och används för att autentisera förfrågningar; manipulering ger <code>401</code>.</p>
+<p><strong>3.5 Kvoträkning.</strong> För att upprätthålla skälig användning räknar proxyn förfrågningar <strong>per <code>uid</code> per lokalt dygn och per månad</strong>, och räknar totalt antal tokens mot ett enda organisationsbrett dygnstak. Räknarna lagras i <strong>Cloudflare Durable Objects</strong>. Räknarna innehåller identifieraren och ett tal — inte ditt hälsomässiga innehåll.</p>
+<p><strong>3.6 Köpverifiering.</strong> Om du tecknar prenumeration skickar appen en kvittoreferens (<code>ios:&lt;originalTransactionId&gt;</code> eller <code>android:&lt;purchaseToken&gt;</code>) till proxyn, som verifierar den mot <strong>Apple App Store Server API</strong> eller <strong>Google Play Developer API</strong>. Vi behåller ett cachat verifieringsutlåtande <strong>per <code>uid</code> i upp till 24 timmar</strong>, nycklat på en SHA-256-hash av kvittot. <strong>Inget kortnummer, inga betaluppgifter och ingen faktureringsadress når någonsin appen eller vår server</strong> — de stannar hos Apple eller Google.</p>
+<p><strong>3.7 Serverloggar.</strong> Proxyn loggar driftmetadata — inklusive <code>uid</code>, nivå (entitlement), utfall och eventuella svarsfilterflaggor (<code>event: "response_flag"</code>) som används för att mäta doserings-/verkanläckage. Loggarna används för missbruksskydd, kostnadskontroll och säkerhetsmätning. Loggarnas lagringstid måste bekräftas (se §6). <strong><span class="todo">ATT BEKRÄFTA: Cloudflare Workers logg-lagringstid.</span></strong></p>
+<p><strong>3.8 Den valfria användningsstatistiken — planerad, INTE byggd.</strong> En framtida <strong>opt-in</strong>-funktion för användningsstatistik är dokumenterad men <strong>är inte byggd och är avstängd som standard</strong>. Om den någonsin lanseras skulle den samla in <strong>endast räknare</strong> (appöppningar, antal loggningar, kvotnivåer) kopplade till samma anonyma installations-ID, och den skulle beskrivas som *"bara om du väljer att slå på den".* Den får <strong>inte</strong> beskrivas någonstans som något som redan samlas in. Denna policy uppdateras innan en sådan funktion lanseras.</p>
+<p><strong>3.9 Vad vi aldrig gör.</strong> Vi visar <strong>inga</strong> annonser, <strong>säljer inte</strong> dina uppgifter, delar dem <strong>inte</strong> med datamäklare och har <strong>inget</strong> tredjepartsanalys- eller spårnings-SDK. Hälsodata lämnar enheten <strong>endast</strong> som AI-sammanhanget i §3.2, och <strong>endast</strong> när du skickar en AI-fråga.</p>
+<h2>4. Rättslig grund per behandling</h2>
+<p>Enligt GDPR krävs en rättslig grund för varje ändamål. Eftersom hälsodata är en <strong>särskild kategori</strong> av uppgifter (art. 9) krävs <strong>både</strong> en grund enligt art. 6 <strong>och</strong> ett undantag enligt art. 9. För AI-coachen vilar vi på ditt <strong>uttryckliga samtycke (art. 9.2.a)</strong>, som inhämtas i appen före användning.</p>
+<table>
+<tr><th>#</th><th>Behandling</th><th>Uppgifter</th><th>Rättslig grund (art. 6)</th><th>Grund för särskild kategori (art. 9)</th></tr>
+<tr><td>4.1</td><td>Lagring och analys av dina loggar <strong>på enheten</strong></td><td>Måltider, symtom, tillskott, inställningar</td><td>Inte "behandling av den ansvarige" i vanlig mening (uppgifterna stannar under din egen kontroll på din egen enhet); där det ändå ses som behandling: <strong>art. 6.1.a samtycke</strong></td><td><strong>Art. 9.2.a — uttryckligt samtycke</strong></td></tr>
+<tr><td>4.2</td><td>Att skicka hälso-kontexten till AI-coachen och ta emot svaret</td><td>7 dagars symtom, tillskott <strong>med dosering</strong>, måltider, nyckelmönster, senaste 10 meddelandena</td><td><strong>Art. 6.1.a samtycke</strong> (och/eller <strong>6.1.b</strong> för att utföra den begärda funktionen)</td><td><strong>Art. 9.2.a — uttryckligt samtycke</strong> (den grund som specifikt krävs för att hälsodata lämnar enheten)</td></tr>
+<tr><td>4.3</td><td>Kvoträkning och missbruksskydd</td><td>Anonymt installations-ID (<code>uid</code>), räknare, förfrågningsmetadata</td><td><strong>Art. 6.1.f berättigat intresse</strong> (tjänstens integritet, kostnadskontroll) eller <strong>6.1.b</strong></td><td>Inte tillämpligt (inget hälsoinnehåll i räknaren)</td></tr>
+<tr><td>4.4</td><td>Köp-/entitlement-verifiering</td><td>Kvittoreferens, verifieringsutlåtande</td><td><strong>Art. 6.1.b avtal</strong> (att leverera den prenumeration du köpt)</td><td>Inte tillämpligt</td></tr>
+<tr><td>4.5</td><td>Säkerhetsloggning och mätning av säkerhetsfiltret</td><td><code>uid</code>, nivå, svarsflaggor</td><td><strong>Art. 6.1.f berättigat intresse</strong></td><td>Inte tillämpligt på själva loggfälten</td></tr>
+<tr><td>4.6</td><td>Valfri användningsstatistik (planerad, opt-in)</td><td>Endast räknare</td><td><strong>Art. 6.1.a samtycke</strong></td><td>Inte tillämpligt</td></tr>
+</table>
+<p><strong>4.7 Samtycket är gångjärnet.</strong> Du ger uttryckligt samtycke via appens samtyckesskärm <strong>innan</strong> någon loggning sker (<code>consent_given</code> / <code>consent_version</code>). Du kan <strong>återkalla samtycket när som helst</strong> i Inställningar; återkallelsen stoppar framtida AI-behandling. <strong><span class="todo">ATT BEKRÄFTA / JURIST: om art. 6.1.b alls bör åberopas för §4.2, eller om samtycket ensamt är korrekt och tillräcklig grund; samt bekräfta att samtyckesskärmens formulering uppfyller art. 9.2.a:s krav på uttryckligt samtycke.</span></strong></p>
+<h2>5. Överföring till tredjeland (USA)</h2>
+<p><strong>5.1 Vart uppgifterna tar vägen.</strong> När du använder AI-coachen behandlas din hälso-kontext <strong>i USA</strong> — av <strong>Cloudflare</strong> och av <strong>Anthropic</strong>. Båda är amerikanska bolag. En del behandling kan ske i Cloudflares globala edge-nät.</p>
+<p><strong>5.2 Överföringsmekanism.</strong> Överföring från EU/EES till USA avses täckas av <strong>EU:s standardavtalsklausuler</strong> (kommissionens genomförandebeslut (EU) 2021/914) tillsammans med ett <strong>personuppgiftsbiträdesavtal</strong> med respektive leverantör. <strong><span class="todo">ATT BEKRÄFTA: bekräfta att ett undertecknat biträdesavtal som införlivar 2021 års SCC finns med Cloudflare och med Anthropic, och dokumentera vilken modul som används.</span></strong> Cloudflare och Anthropic kan också stödja sig på ytterligare skyddsåtgärder (t.ex. certifiering enligt Data Privacy Framework); detta ska verifieras, inte antas. <strong><span class="todo">ATT BEKRÄFTA</span></strong></p>
+<p><strong>5.3 Praktisk konsekvens.</strong> Eftersom överföringen bara sker när du skickar en AI-fråga innebär <strong>att inte använda AI-coachen att ingen överföring till USA sker</strong>. Det är det enskilt mest effektiva sättet att hålla dina hälsodata inom EU/EES.</p>
+<p><strong>5.4 JURIST.</strong> Konsekvensbedömningen för överföring (TIA) för Cloudflare och Anthropic, samt valet mellan SCC och eventuellt beslut om adekvat skyddsnivå, måste bekräftas av jurist.</p>
+<h2>6. Lagringstid</h2>
+<table>
+<tr><th>Uppgift</th><th>Var</th><th>Lagringstid</th></tr>
+<tr><td>Måltider, symtom, tillskott, chatthistorik, inställningar</td><td>Din enhet (SQLite)</td><td>Tills <strong>du</strong> raderar dem, rensar appdata eller avinstallerar appen. Vi har ingen kopia.</td></tr>
+<tr><td>AI-hälso-kontext under transport / hos modell-leverantören</td><td>Cloudflare + Anthropic</td><td>Behandlas för att skapa svaret. <strong>Anthropics API-lagring och konfiguration utan lagring måste bekräftas: <span class="todo">ATT BEKRÄFTA</span>.</strong></td></tr>
+<tr><td>Kvoträknare (per <code>uid</code>, dygn + månad)</td><td>Cloudflare Durable Objects</td><td><strong>Mål: rullande fönster, räknarna upphör efter den period de mäter (dygn/månad) plus kort buffert — exakt TTL att bekräfta <span class="todo">ATT BEKRÄFTA</span>.</strong></td></tr>
+<tr><td>Cachat kvittoverifieringsutlåtande</td><td>Cloudflare</td><td><strong>Upp till 24 timmar</strong> (<code>ENTITLEMENT_CACHE_HOURS</code>).</td></tr>
+<tr><td>Signerad enhetstoken</td><td>Cloudflare + din enhet</td><td>Giltig tills den ogiltigförklaras / appdata rensas.</td></tr>
+<tr><td>Driftloggar inkl. <code>response_flag</code></td><td>Cloudflare</td><td><strong><span class="todo">ATT BEKRÄFTA — bekräfta och dokumentera en bestämd gräns, t.ex. 30 dagar.</span></strong></td></tr>
+<tr><td>Valfri användningsstatistik</td><td>(planerad, ej byggd)</td><td><strong>[Ej tillämpligt förrän byggd]</strong></td></tr>
+</table>
+<p><strong>6.1 JURIST.</strong> Ett lagringstidsuttalande som säger "<strong><span class="todo">ATT BEKRÄFTA</span></strong>" kan inte publiceras. Ersätt varje sådant fält med en konkret, försvarbar period före lansering.</p>
+<h2>7. Dina rättigheter enligt GDPR</h2>
+<p>Du har följande rättigheter, som du kan utöva kostnadsfritt:</p>
+<ul>
+<li><strong>Tillgång (art. 15)</strong> — se de personuppgifter vi behandlar om dig. Eftersom dina loggar ligger på enheten kan du se dem i appen. För de pseudonyma serveruppgifterna (kvoträknare knutna till ditt <code>uid</code>), kontakta oss på <strong><span class="todo">ATT FYLLA I</span></strong>.</li>
+<li><strong>Rättelse (art. 16)</strong> — rätta felaktiga uppgifter; redigera dem i appen.</li>
+<li><strong>Radering / "rätten att bli bortglömd" (art. 17)</strong> — radera dina uppgifter; se §8.</li>
+<li><strong>Begränsning (art. 18)</strong> — begränsa behandlingen medan en tvist utreds.</li>
+<li><strong>Dataportabilitet (art. 20)</strong> — exportera dina uppgifter i ett vanligt format; appen erbjuder export som JSON/CSV.</li>
+<li><strong>Invändning (art. 21)</strong> — invänd mot behandling som vilar på berättigat intresse (§4.3, §4.5).</li>
+<li><strong>Återkalla samtycke (art. 7.3)</strong> — när som helst i Inställningar, utan att det påverkar lagligheten av behandling som skett före återkallelsen.</li>
+<li><strong>Lämna klagomål</strong> — till Integritetsskyddsmyndigheten (<strong>IMY</strong>, imy.se) eller din lokala tillsynsmyndighet.</li>
+</ul>
+<p><strong>7.1 Identifiering vid serverförfrågningar.</strong> Eftersom det inte finns något konto kan vi behöva ditt <strong>anonyma installations-ID</strong> för att hitta kvoträknarna på serversidan vid en begäran om tillgång eller radering. Se §8.</p>
+<h2>8. Hur man raderar allt</h2>
+<p><strong>8.1 Radera data på enheten.</strong> Att avinstallera appen tar bort den lokala SQLite-databasen och alla loggar. Alternativt: använd <strong>"Radera all min data"</strong> i appens integritetsinställningar, vilket permanent raderar dina måltider, symtom, tillskott, chatthistorik och inställningar. <strong>Detta kan inte ångras.</strong> När det är raderat, och när du slutar använda AI-coachen, finns ingen kopia kvar hos oss.</p>
+<p><strong>8.2 Radera kvoträknarna på serversidan.</strong> Proxyn har en liten pseudonym post (räknarna i §3.5/§3.7 knutna till ditt <code>uid</code>). För att få den raderad: mejla <strong><span class="todo">ATT FYLLA I</span></strong> med ditt <strong>installations-ID</strong> och ämnet "Begäran om radering". Vi raderar räknarna och tillhörande loggar inom <strong>den lagstadgade månaden</strong> (art. 12.3). <strong><span class="todo">ATT BEKRÄFTA: bekräfta den interna processen och verktygen för att hitta och radera ett <code>uid</code> i Durable Objects.</span></strong></p>
+<p><strong>8.3 Återkallat samtycke ≠ raderad data.</strong> Att återkalla samtycket stoppar framtida AI-behandling men raderar inte i sig några uppgifter. Följ §8.1 och §8.2 för att radera.</p>
+<h2>9. Barn</h2>
+<p>SIBO AI är <strong>inte riktad till barn</strong>. Den är avsedd för <strong>vuxna från 16 år</strong>. Vi samlar inte medvetet in uppgifter från någon <strong>under 16</strong>. Om du tror att ett barn under 16 har använt appen, kontakta oss på <strong><span class="todo">ATT FYLLA I</span></strong> så raderar vi tillhörande serveruppgifter. <strong><span class="todo">ATT BEKRÄFTA / JURIST: bekräfta åldersgränsen mot butikernas åldersklassning och respektive marknads regler.</span></strong></p>
+<h2>10. Ändringar av denna policy (ändringshistorik)</h2>
+<p>Vi uppdaterar policyn när dataflödet ändras — t.ex. om den planerade opt-in-statistiken (§3.8) lanseras, om ett nytt underbiträde tillkommer, eller om lagringstiderna ändras.</p>
+<table>
+<tr><th>Version</th><th>Datum</th><th>Ändringar</th></tr>
+<tr><td>1.0</td><td>2026-09-12</td><td>Första versionen. Redovisar det verkliga dataflödet i AI-coachen (7 dagars symtom/tillskott-med-dosering/måltider + senaste 10 meddelandena till Cloudflare → Anthropic), rättar det osanna påståendet "hälsodata stannar på din enhet", lägger till grund enligt art. 9.2.a, mekanism för USA-överföring, lagringstidstabell, rättigheter, radering, barn samt bilagan med textändringar.</td></tr>
+</table>
+<hr>
+<h1>ANNEX A / BILAGA A — In-app- and store copy that must change / In-app- och butikstexter som måste ändras</h1>
+<p>These are the strings whose current wording contradicts §3 of this policy. The left column is the existing key; the columns propose replacement text per language. <strong>The current sentence "Your health data stays on your device" is inaccurate and must not survive publication.</strong> Apply to the relevant files (<code>store-assets/STORE-LISTING.md</code> for store copy; <code>ios/SIBOCoach/*.lproj/Localizable.strings</code> and <code>android/res/values*/strings.xml</code> for in-app strings), then re-check all four locales.</p>
+<p>Dessa strängar motsäger §3 i denna policy. Vänster kolumn är befintlig nyckel; kolumnerna föreslår ersättningstext per språk. <strong>Meningen "Your health data stays on your device" är osann och får inte finnas kvar vid publicering.</strong> Ändra i respektive fil (<code>store-assets/STORE-LISTING.md</code> för butikstext; <code>ios/SIBOCoach/*.lproj/Localizable.strings</code> och <code>android/res/values*/strings.xml</code> för in-app-strängar), och kontrollera alla fyra språken.</p>
+<table>
+<tr><th>Key (existing)</th><th>Where used</th><th>English (proposed)</th><th>Svenska (förslag)</th><th>Deutsch (Vorschlag)</th><th>Español (propuesta)</th></tr>
+<tr><td><code>store_privacy_bullet</code> *(currently: "Your health data stays on your device")*</td><td>Play/App Store full description, "Built for privacy"</td><td><strong>"Your logs stay on your device. When you use the AI Coach, a summary of your recent logs — including your supplements and their dosages — is sent through our proxy to Anthropic (USA) to generate the answer. Nothing is sent unless you send a question."</strong></td><td><strong>"Dina loggar stannar på din enhet. När du använder AI-coachen skickas en sammanfattning av dina senaste loggar — inklusive dina tillskott och deras dosering — via vår proxy till Anthropic (USA) för att skapa svaret. Inget skickas om du inte skickar en fråga."</strong></td><td><strong>"Deine Einträge bleiben auf deinem Gerät. Wenn du den KI-Coach nutzt, wird eine Zusammenfassung deiner letzten Einträge — einschließlich deiner Präparate und deren Dosierung — über unseren Proxy an Anthropic (USA) gesendet, um die Antwort zu erzeugen. Ohne deine Frage wird nichts gesendet."</strong></td><td><strong>"Tus registros permanecen en tu dispositivo. Cuando usas el Coach de IA, se envía un resumen de tus registros recientes —incluidos tus suplementos y sus dosis— a través de nuestro proxy a Anthropic (EE. UU.) para generar la respuesta. No se envía nada a menos que envíes una pregunta."</strong></td></tr>
+<tr><td><code>store_ai_bullet</code> *(new — add next to the AI Coach feature)*</td><td>Play/App Store full description, AI Coach section</td><td><strong>"The AI Coach looks at your last 7 days of symptoms, meals and supplements (with dosages) plus your last 10 chat messages. That context leaves your device only when you press send."</strong></td><td><strong>"AI-coachen tittar på dina senaste 7 dagars symtom, måltider och tillskott (med dosering) samt dina senaste 10 chattmeddelanden. Det sammanhanget lämnar enheten bara när du trycker skicka."</strong></td><td><strong>"Der KI-Coach sieht deine Symptome, Mahlzeiten und Präparate (mit Dosierung) der letzten 7 Tage sowie deine letzten 10 Chat-Nachrichten. Dieser Kontext verlässt dein Gerät nur, wenn du auf Senden tippst."</strong></td><td><strong>"El Coach de IA revisa tus síntomas, comidas y suplementos (con dosis) de los últimos 7 días, más tus últimos 10 mensajes de chat. Ese contexto solo sale de tu dispositivo cuando pulsas enviar."</strong></td></tr>
+<tr><td><code>consent_how_1</code> *(currently: "✅ Store your logs locally on your device")*</td><td>In-app consent screen</td><td><strong>"✅ Store your logs locally on your device (we keep no server copy)"</strong></td><td><strong>"✅ Lagrar dina loggar lokalt på din enhet (vi har ingen serverkopia)"</strong></td><td><strong>"✅ Speichert deine Einträge lokal auf deinem Gerät (keine Serverkopie bei uns)"</strong></td><td><strong>"✅ Guarda tus registros localmente en tu dispositivo (no conservamos copia en el servidor)"</strong></td></tr>
+<tr><td><code>consent_how_2</code> *(currently: "✅ Send data to our AI service to generate pattern insights (Pro feature)")*</td><td>In-app consent screen</td><td><strong>"✅ Only when YOU send an AI question: send a summary of your recent logs (symptoms, meals, supplements WITH dosages, last 10 messages) through our proxy to Anthropic (USA) to generate the reply"</strong></td><td><strong>"✅ Endast när DU skickar en AI-fråga: skicka en sammanfattning av dina senaste loggar (symtom, måltider, tillskott MED dosering, senaste 10 meddelandena) via vår proxy till Anthropic (USA) för att skapa svaret"</strong></td><td><strong>"✅ Nur wenn DU eine KI-Frage sendest: eine Zusammenfassung deiner letzten Einträge (Symptome, Mahlzeiten, Präparate MIT Dosierung, letzte 10 Nachrichten) über unseren Proxy an Anthropic (USA) senden, um die Antwort zu erzeugen"</strong></td><td><strong>"✅ Solo cuando TÚ envías una pregunta a la IA: enviar un resumen de tus registros recientes (síntomas, comidas, suplementos CON dosis, últimos 10 mensajes) a través de nuestro proxy a Anthropic (EE. UU.) para generar la respuesta"</strong></td></tr>
+<tr><td><code>consent_ai_note</code> *(currently: "AI Processing (Pro): When using AI Insights, your logs are sent to our AI provider for analysis. Data is not retained by the provider after processing.")*</td><td>In-app consent screen, AI note</td><td><strong>"AI processing: When you send an AI question, a summary of your recent logs — including supplements with dosages — is sent via Cloudflare (our proxy) to Anthropic in the USA. Cloudflare and Anthropic are processors; transfers use the EU Standard Contractual Clauses. Do not use the AI Coach if you do not want this."</strong></td><td><strong>"AI-behandling: När du skickar en AI-fråga skickas en sammanfattning av dina senaste loggar — inklusive tillskott med dosering — via Cloudflare (vår proxy) till Anthropic i USA. Cloudflare och Anthropic är biträden; överföringen sker med EU:s standardavtalsklausuler. Använd inte AI-coachen om du inte vill detta."</strong></td><td><strong>"KI-Verarbeitung: Wenn du eine KI-Frage sendest, wird eine Zusammenfassung deiner letzten Einträge — einschließlich Präparate mit Dosierung — über Cloudflare (unser Proxy) an Anthropic in den USA gesendet. Cloudflare und Anthropic sind Auftragsverarbeiter; die Übermittlung erfolgt auf Basis der EU-Standardvertragsklauseln. Nutze den KI-Coach nicht, wenn du das nicht möchtest."</strong></td><td><strong>"Procesamiento de IA: cuando envías una pregunta, se envía un resumen de tus registros recientes —incluidos suplementos con dosis— a través de Cloudflare (nuestro proxy) a Anthropic en EE. UU. Cloudflare y Anthropic son encargados; la transferencia usa las Cláusulas Contractuales Tipo de la UE. No uses el Coach de IA si no quieres esto."</strong></td></tr>
+<tr><td><code>privacy_ai_summary</code> *(new)*</td><td>In-app privacy settings</td><td><strong>"What leaves your device: only your AI questions and a summary of your recent logs (7 days of symptoms, meals and supplements with dosages, plus your last 10 messages). Sent via Cloudflare to Anthropic (USA), only when you send a question."</strong></td><td><strong>"Vad som lämnar din enhet: endast dina AI-frågor och en sammanfattning av dina senaste loggar (7 dagars symtom, måltider och tillskott med dosering, samt dina senaste 10 meddelanden). Skickas via Cloudflare till Anthropic (USA), bara när du skickar en fråga."</strong></td><td><strong>"Was dein Gerät verlässt: nur deine KI-Fragen und eine Zusammenfassung deiner letzten Einträge (7 Tage Symptome, Mahlzeiten und Präparate mit Dosierung, plus deine letzten 10 Nachrichten). Über Cloudflare an Anthropic (USA), nur wenn du eine Frage sendest."</strong></td><td><strong>"Qué sale de tu dispositivo: solo tus preguntas a la IA y un resumen de tus registros recientes (7 días de síntomas, comidas y suplementos con dosis, más tus últimos 10 mensajes). Se envía vía Cloudflare a Anthropic (EE. UU.), solo cuando envías una pregunta."</strong></td></tr>
+<tr><td><code>privacy_delete_confirm</code> *(currently lists local data only)*</td><td>In-app privacy settings, delete-confirm</td><td><strong>"This permanently deletes your meals, symptoms, supplements, chat history and settings on THIS device. To also delete the anonymous quota counters on our server, e-mail <span class="todo">ATT FYLLA I</span> with your installation ID. This cannot be undone."</strong></td><td><strong>"Detta raderar permanent dina måltider, symtom, tillskott, chatthistorik och inställningar på DENNA enhet. För att även radera de anonyma kvoträknarna på vår server, mejla <span class="todo">ATT FYLLA I</span> med ditt installations-ID. Detta kan inte ångras."</strong></td><td><strong>"Dies löscht dauerhaft deine Mahlzeiten, Symptome, Präparate, Chatverlauf und Einstellungen auf DIESEM Gerät. Um auch die anonymen Kontingent-Zähler auf unserem Server zu löschen, sende eine E-Mail an <span class="todo">ATT FYLLA I</span> mit deiner Installations-ID. Dies kann nicht rückgängig gemacht werden."</strong></td><td><strong>"Esto elimina permanentemente tus comidas, síntomas, suplementos, historial de chat y ajustes en ESTE dispositivo. Para eliminar también los contadores anónimos de cuota en nuestro servidor, escribe a <span class="todo">ATT FYLLA I</span> con tu ID de instalación. Esto no se puede deshacer."</strong></td></tr>
+<tr><td><code>store_review_notes</code> *(currently: "Health data is stored locally on-device. The optional AI Coach sends ... a limited health-context summary")*</td><td>App Store/Play "Notes for review"</td><td><strong>"Health data is stored locally on-device (SQLite); we hold no server copy. The AI Coach is the ONLY feature that sends health data off-device: on user send, a 7-day summary of symptoms, meals and supplements (with dosages) plus the last 10 messages goes to our Cloudflare Worker proxy and on to Anthropic (claude-haiku-4-5) in the USA. Anonymous per-install ID; no account; no identity. Store receipts are verified server-side. Privacy policy: <span class="todo">ATT FYLLA I: URL</span>."</strong></td><td><strong>"Hälsodata lagras lokalt på enheten (SQLite); vi har ingen serverkopia. AI-coachen är den ENDA funktionen som skickar hälsodata från enheten: när användaren skickar går en 7-dagarssammanfattning av symtom, måltider och tillskott (med dosering) samt de senaste 10 meddelandena till vår Cloudflare Worker-proxy och vidare till Anthropic (claude-haiku-4-5) i USA. Anonymt per-installations-ID; inget konto; ingen identitet. Butikskvitton verifieras på serversidan. Integritetspolicy: <span class="todo">ATT FYLLA I: URL</span>."</strong></td><td><strong>"Gesundheitsdaten werden lokal auf dem Gerät gespeichert (SQLite); wir halten keine Serverkopie. Der KI-Coach ist die EINZIGE Funktion, die Gesundheitsdaten vom Gerät sendet: Beim Senden durch den Nutzer geht eine 7-Tage-Zusammenfassung von Symptomen, Mahlzeiten und Präparaten (mit Dosierung) plus die letzten 10 Nachrichten an unseren Cloudflare-Worker-Proxy und weiter an Anthropic (claude-haiku-4-5) in den USA. Anonyme Installations-ID; kein Konto; keine Identität. Store-Belege werden serverseitig verifiziert. Datenschutzerklärung: <span class="todo">ATT FYLLA I: URL</span>."</strong></td><td><strong>"Los datos de salud se almacenan localmente en el dispositivo (SQLite); no conservamos copia en el servidor. El Coach de IA es la ÚNICA función que envía datos de salud fuera del dispositivo: al enviar el usuario, un resumen de 7 días de síntomas, comidas y suplementos (con dosis) más los últimos 10 mensajes va a nuestro proxy Cloudflare Worker y de allí a Anthropic (claude-haiku-4-5) en EE. UU. ID de instalación anónimo; sin cuenta; sin identidad. Los recibos de tienda se verifican en el servidor. Política de privacidad: <span class="todo">ATT FYLLA I: URL</span>."</strong></td></tr>
+</table>
+<h3>Notes for whoever applies this annex / Noter för den som genomför bilagan</h3>
+<ul>
+<li><strong>Do not translate the claim as-is.</strong> The four-language rewrite above replaces a single misleading sentence with an honest, specific one. Shortening it back to "stays on your device" reintroduces the defect. <strong>Översätt inte påståendet rakt av</strong> — skrivningen ovan ersätter en missvisande mening med en sann och specifik; kortar du tillbaka till "stannar på din enhet" är felet tillbaka.</li>
+<li><strong>Replace every </strong><span class="todo">ATT FYLLA I</span><strong>: e-mail, installations-ID instruction, and the privacy-policy URL (§1.1, §7.1, §8.2, and the store notes) must be filled before publishing. </strong><span class="todo">ATT FYLLA I</span>** får inte stå kvar i publicerad text.</li>
+<li><strong>Still open for legal sign-off:</strong> the Art. 9(2)(a) consent wording (§4.7), the SCC/DPA confirmation with Cloudflare and Anthropic (§5.2), the retention schedule (§6), the server-side deletion process (§8.2), and the age threshold (§9). <strong>Kvar för jurist:</strong> samtyckesformuleringen (art. 9.2.a), SCC/biträdesavtal, lagringstider, raderingsprocessen på serversidan och åldersgränsen.</li>
+</ul>
+<p>*End of document / Slut på dokument.*</p></main>
+<footer class="site"><div class="wrap">
+  <p>SIBO AI — Menudo Consulting AB. <a href="/privacy.html">Integritetspolicy</a> · <a href="/support.html">Support</a></p>
+  <p>Den här webbplatsen använder inga cookies, ingen spårning och inga tredjepartsresurser.</p>
+</div></footer>
+</body>
+</html>
