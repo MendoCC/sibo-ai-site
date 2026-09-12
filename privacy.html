@@ -65,7 +65,7 @@
 <p>&gt; <strong>Note for the transparency review:</strong> the dosing detail is intentional but must be disclosed plainly. Sending "Berberine 500 mg" is a health-related detail about you, and it leaves the device as part of the AI context. Any copy that says health data never leaves the device is false for this reason alone.</p>
 <p><strong>3.3 Who receives it — the chain.</strong></p>
 <ol>
-<li>The app sends the request over HTTPS to our backend proxy: <strong><code>https://sibo-coach-proxy.ekonomi-b45.workers.dev</code></strong> (<code>POST /v1/chat</code>), hosted on <strong>Cloudflare</strong> (Cloudflare, Inc., USA, with Cloudflare's EU/global network).</li>
+<li>The app sends the request over HTTPS to our backend proxy: <strong><code>https://sibo-ai-proxy.ekonomi-b45.workers.dev</code></strong> (<code>POST /v1/chat</code>), hosted on <strong>Cloudflare</strong> (Cloudflare, Inc., USA, with Cloudflare's EU/global network).</li>
 <li>The proxy holds the <strong>Anthropic API key server-side</strong> (the app itself has <strong>no</strong> AI key). It forwards the messages and health context to <strong>Anthropic's API</strong> (Anthropic PBC, USA), using the model <strong><code>claude-haiku-4-5</code></strong>.</li>
 <li>Anthropic returns the reply, which the proxy passes back to your app. The reply is <strong>scanned</strong> server-side for dosing strings and efficacy claims; the scan flags are logged (see §3.6).</li>
 </ol>
@@ -181,7 +181,7 @@
 <p>&gt; <strong>Notis för transparensgranskningen:</strong> doseringsdetaljen är avsiktlig men måste redovisas öppet. Att skicka "Berberine 500 mg" är en hälsouppgift om dig, och den lämnar enheten som en del av AI-sammanhanget. All text som säger att hälsodata aldrig lämnar enheten är osann redan av detta skäl.</p>
 <p><strong>3.3 Vilka som tar emot — kedjan.</strong></p>
 <ol>
-<li>Appen skickar förfrågan över HTTPS till vår serverproxy: <strong><code>https://sibo-coach-proxy.ekonomi-b45.workers.dev</code></strong> (<code>POST /v1/chat</code>), driftad på <strong>Cloudflare</strong> (Cloudflare, Inc., USA, med Cloudflares EU/globala nät).</li>
+<li>Appen skickar förfrågan över HTTPS till vår serverproxy: <strong><code>https://sibo-ai-proxy.ekonomi-b45.workers.dev</code></strong> (<code>POST /v1/chat</code>), driftad på <strong>Cloudflare</strong> (Cloudflare, Inc., USA, med Cloudflares EU/globala nät).</li>
 <li>Proxyn håller <strong>Anthropics API-nyckel på serversidan</strong> (appen har <strong>ingen</strong> egen AI-nyckel). Den vidarebefordrar meddelanden och hälso-kontext till <strong>Anthropics API</strong> (Anthropic PBC, USA) med modellen <strong><code>claude-haiku-4-5</code></strong>.</li>
 <li>Anthropic returnerar svaret som proxyn skickar tillbaka till din app. Svaret <strong>skannas</strong> på serversidan efter doseringssträngar och verkan-påståenden; skanningsflaggorna loggas (se §3.6).</li>
 </ol>
