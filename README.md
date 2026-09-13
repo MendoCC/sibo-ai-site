@@ -82,8 +82,10 @@ skärmdumpar — inga illustrationer eller påhittade gränssnitt.
   innehåller båda.
 - `icon-192.png`, `apple-touch-icon.png`, `favicon-64.png`, `og.jpg`
 
-Android-skärmdumparna i app-repot visar **"SIBO Coach"** i apphuvudet och ett
-äldre gränssnitt — de används därför inte här förrän appen är omdöpt.
+Android-skärmdumparna i app-repot är tagna **2026-07-20**, alltså före namnbytet
+till SIBO AI (2026-09-12) och före flera UI-ändringar. De visar därför fel appnamn
+i apphuvudet. **Appen är omdöpt** — det är bilderna som är gamla. Ta nya
+skärmdumpar innan Android-butiksbilderna laddas upp.
 
 ## Publicera
 
