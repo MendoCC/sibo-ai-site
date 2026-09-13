@@ -24,12 +24,12 @@ SRC = os.path.expanduser("~/Projects/sibo-coach")       # app-repot (källan)
 OUT = os.path.expanduser("~/Projects/sibo-ai-site")     # sajtrepot (målet)
 KLOCKA = "SIBO AI"
 ANSVARIG = "Menudo Consulting AB"
-UPPDATERAD = "12 september 2026"
+UPPDATERAD = "12 September 2026"
 POLICY = f"{SRC}/docs/PRIVACY-POLICY.md"
 TARGET = f"{OUT}/privacy.html"
 
 HEAD = """<!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,12 +53,17 @@ HEAD = """<!DOCTYPE html>
 <header class="site"><div class="wrap">
   <a class="brand" href="/"><img src="/img/icon-192.png" alt="">SIBO AI</a>
   <nav>
-    <a href="/#analys">Analysen</a>
-    <a href="/#coachen">Coachen</a>
-    <a href="/#integritet">Integritet</a>
-    <a href="/#pris">Pris</a>
-    <a href="/#faq">Frågor</a>
+    <a href="/#analysis">The analysis</a>
+    <a href="/#coach">The coach</a>
+    <a href="/#privacy">Privacy</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/#faq">FAQ</a>
   </nav>
+  <div class="langs" aria-label="Language">
+    <a href="/" hreflang="en" title="English">EN</a>
+    <a href="/sv/" hreflang="sv" title="Svenska">SV</a>
+    <a href="/de/" hreflang="de" title="Deutsch">DE</a>
+  </div>
   <a class="btn btn-primary btn-sm" href="/support.html">Support</a>
 </div></header>
 
@@ -75,31 +80,33 @@ FOOT = """
 <footer class="site"><div class="wrap">
   <div class="foot-grid">
     <div>
-      <h4>Produkten</h4>
-      <a href="/#analys">Analysen</a>
-      <a href="/#coachen">AI-coachen</a>
-      <a href="/#pris">Pris</a>
-      <a href="/#faq">Vanliga frågor</a>
+      <h4>Product</h4>
+      <a href="/#analysis">The analysis</a>
+      <a href="/#coach">The AI coach</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/#faq">FAQ</a>
     </div>
     <div>
-      <h4>Integritet</h4>
-      <a href="/privacy.html">Integritetspolicy</a>
-      <a href="/support.html">Radera mina uppgifter</a>
+      <h4>Privacy</h4>
+      <a href="/privacy.html">Privacy policy</a>
+      <a href="/support.html">Delete my data</a>
     </div>
     <div>
       <h4>Support</h4>
-      <a href="/support.html">Kontakta oss</a>
-      <a href="/support.html">Hantera prenumeration</a>
-      <a href="/support.html">Statistiken jag ser</a>
+      <a href="/support.html">Contact us</a>
+      <a href="/support.html">Manage subscription</a>
+      <a href="/support.html">Understanding the stats</a>
     </div>
     <div>
-      <h4>Om</h4>
-      <a href="/support.html">Menudo Consulting AB</a>
+      <h4>Languages</h4>
+      <a href="/" hreflang="en">English</a>
+      <a href="/sv/" hreflang="sv">Svenska</a>
+      <a href="/de/" hreflang="de">Deutsch</a>
     </div>
   </div>
   <div class="foot-bar">
     <p>SIBO AI — Menudo Consulting AB.</p>
-    <p>Den här webbplatsen använder inga cookies, ingen spårning, inga tredjepartsresurser och ingen JavaScript.</p>
+    <p>This website uses no cookies, no tracking, no third-party resources and no JavaScript.</p>
   </div>
 </div></footer>
 
@@ -193,10 +200,14 @@ def main():
         en_md, sv_md = policy_md, ""
 
     body = [
-        '<p class="eyebrow">Juridik</p>',
+        '<p class="eyebrow">Legal</p>',
         "<h1>Privacy policy / Integritetspolicy</h1>",
-        f'<p class="lede">{KLOCKA} · {ANSVARIG} · Senast uppdaterad {UPPDATERAD}</p>',
+        f'<p class="lede">{KLOCKA} · {ANSVARIG} · Last updated {UPPDATERAD}</p>',
         '<p><a href="#en">English</a> · <a href="#sv">Svenska</a></p>',
+        '<p class="small muted">A German version of this policy is not yet available. '
+        'It will be added before publication. '
+        'Eine deutsche Fassung dieser Erklärung liegt noch nicht vor; sie wird vor der '
+        'Veröffentlichung ergänzt.</p>',
         "<hr>",
         '<h2 id="en">Privacy policy (English)</h2>',
         md_to_html(en_md) if en_md.strip() else "<p>[engelska saknas i källfilen]</p>",
